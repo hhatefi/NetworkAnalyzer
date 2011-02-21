@@ -1,0 +1,2 @@
+The goal of network analyzer is to analyze a power network vulnerability. It uses "yices" as the main tool
+for analyzing a network. It tries to find minimum cardinality attack for a given network.
