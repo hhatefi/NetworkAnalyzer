@@ -25,10 +25,13 @@ LDFLAGS = -g -O2 -L$(EXTLIBD)
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
+	[ ! -d "$(BIND)" ] && mkdir $(BIND); \
 	$(CPP) $(LDFLAGS) -o $@ $^ $(LIBS)   
 
 $(OBJD)/%.o: %.cpp $(INCS)
+	[ ! -d "$(OBJD)" ] && mkdir $(OBJD); \
 	$(CPP) $(CPPFLAGS) -c -o $@ $< 
+	
 
 clean:
 	rm -r $(OBJS) $(EXEC)
