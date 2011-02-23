@@ -10,6 +10,7 @@
 using namespace std;
 
 #include "../inc/NetworkAnalyzer.h"
+#include "../inc/Network.h"
 
 int main(int argc, char**argv) {
 
@@ -26,7 +27,10 @@ int main(int argc, char**argv) {
 		cout<<"Error using Network analyzer. Correct way of using is:\nNetworkAnalyzer -t THRESHOLD -m MODEL\n";
 	}
 	else {
-		doAnalysis(argv[modelFileArgIndex], atof(argv[thresholdArgIndex]));
+		Network n;
+		n.readNetworkStructureFromFile(argv[modelFileArgIndex]);
+		if(!n.isValid()) cerr<<"Error, invalid network.\n";
+		//doAnalysis(argv[modelFileArgIndex], atof(argv[thresholdArgIndex]));
 	}
 
 	return 0;

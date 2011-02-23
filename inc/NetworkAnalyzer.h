@@ -16,7 +16,7 @@
 
 
     enum PowerGridNodeType {
-        GENERATOR, LOAD, NORMAL
+        PG_GENERATOR, PG_DEMAND, PG_NORMAL
     };
 
     struct PowerGridEdge {
@@ -86,7 +86,7 @@
         for (i = 0; i < pgm -> nNodes; i++) {
             pgm -> nodes[i].nOutgoingEdges = 0;
             pgm -> nodes[i].nIncomingEdges = 0;
-            pgm -> nodes[i].nodeType = NORMAL;
+            pgm -> nodes[i].nodeType = PG_NORMAL;
         }
         /*
          * Count the number of incoming and outgoing edges;
@@ -127,7 +127,7 @@
          * Set the index of generators
          */
         for (i = 0; i < pgm -> nGenerators; i++) {
-            pgm -> nodes[pgm -> generators[i].nodeID].nodeType = GENERATOR;
+            pgm -> nodes[pgm -> generators[i].nodeID].nodeType = PG_GENERATOR;
             pgm -> nodes[pgm -> generators[i].nodeID].genOrLdIndex = i;
         }
 
@@ -135,7 +135,7 @@
          * Set the index of loads
          */
         for (i = 0; i < pgm -> nLoads; i++) {
-            pgm -> nodes[pgm -> loads[i].nodeID].nodeType = LOAD;
+            pgm -> nodes[pgm -> loads[i].nodeID].nodeType = PG_DEMAND;
             pgm -> nodes[pgm -> loads[i].nodeID].genOrLdIndex = i;
         }
 
@@ -163,7 +163,7 @@
 
         if (fscanf(model, "%d%d%d%d", &(pgm -> nNodes), &(pgm -> nEdges),
                 &(pgm -> nGenerators), &(pgm -> nLoads)) != 4) {
-            printf("Input file format is corrupted or incomplet.\n");
+            printf("Input file format is corrupted or incomplete.\n");
             free(pgm);
             fclose(model);
             return NULL;
@@ -356,12 +356,12 @@
              * ZERO otherwise
              */
 
-            if ( pgm -> nodes[i].nodeType == GENERATOR ) {
+            if ( pgm -> nodes[i].nodeType == PG_GENERATOR ) {
                 yices_expr argLeft[2] = {outgoingSum, incomingSum};
                 left = yices_mk_sub(ctx, argLeft, 2);
                 right = pgm -> generators[pgm -> nodes[i].genOrLdIndex].power;
             }
-            else if ( pgm -> nodes[i].nodeType == LOAD ) {
+            else if ( pgm -> nodes[i].nodeType == PG_DEMAND ) {
                 yices_expr argLeft[2] = {incomingSum, outgoingSum};
                 left = yices_mk_sub(ctx, argLeft, 2);
                 right = pgm -> loads[pgm -> nodes[i].genOrLdIndex].power;

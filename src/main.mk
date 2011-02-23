@@ -19,8 +19,8 @@ OBJS=$(patsubst %.cpp, $(OBJD)/%.o, $(SRCS))
 INCS=$(wildcard $(INTINCD)/*.h)
 
 CPP = g++
-CPPFLAGS = -g -O2 -I $(EXTINCD)
-LDFLAGS = -g -O2 -L$(EXTLIBD)
+CPPFLAGS = -ggdb -Wall -O2 -I $(EXTINCD)
+LDFLAGS = -ggdb -Wall -O2 -L$(EXTLIBD)
 
 all: $(EXEC)
 
