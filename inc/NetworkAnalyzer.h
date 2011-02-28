@@ -237,7 +237,17 @@
 
     }
 
-    yices_context createLogicalContext(struct PowerGridModel *pgm, float threshold) {
+    yices_context createLogicalContext(struct PowerGridModel *pgm, float threshold, const char * outputFileName) {
+
+    		FILE * outputStream = NULL;
+		if( outputFileName != NULL ) {
+			outputStream = freopen(outputFileName, "w", stdout);
+			if( outputStream == NULL ) {
+				cerr<<"Cannot open "<<outputFileName<<"\n";
+				freopen("/dev/tty", "w", stdout);
+			}
+		}
+
         yices_context ctx = yices_mk_context();
 
         /*
@@ -472,6 +482,12 @@
         yices_pp_expr(loadSumThreshold);
         printf(")\n");
 
+        if ( outputStream != NULL ) {
+//        		fclose(outputStream);
+//        		stdout = oldStdout;
+        		freopen("/dev/tty", "w", stdout);
+        }
+
 
         return ctx;
 
@@ -552,11 +568,11 @@
 
     }
 
-    void doAnalysis(char* networkModelFile, double threshold) {
+    void doAnalysis(char* networkModelFile, double threshold, const char * outputFileName = NULL) {
     		PowerGridModel *pgm = readNetworkModel(networkModelFile);
     		yices_context ctx;
     		if(pgm)
-    			ctx = createLogicalContext(pgm, threshold);
+    			ctx = createLogicalContext(pgm, threshold, outputFileName);
     		if(ctx)
     			findMinCardinalityAttack(ctx, pgm);
 

@@ -15,28 +15,38 @@
 
 #include <map>
 
-
-
 class Network {
 private:
-	int nodeNumber, edgeNumber, generatorNumber, demandNumber;
+	int mNodeNumber, mEdgeNumber, mGeneratorNumber, mDemandNumber;
 
-	vector<Node *> nodeAddressList;
-	vector<Edge> edgeList;
-	vector<int> generatorIndices, demandIndices;
-	map<int, int> nodeIDDictionary;
+	vector<Node *> mNodeAddressList;
+	vector<Edge> mEdgeList;
+	vector<int> mGeneratorIndexList, mDemandIndexList;
+	map<int, int> mNodeIDNodeIndexMap;
 
-	bool valid;
+	bool mIsValid;
 
 	/*
 	 * Mutators
 	 */
-	void setNodeNumber(int nodeNumber)			{ this -> nodeNumber = nodeNumber;}
-	void setEdgeNumber(int edgeNumber)			{ this -> edgeNumber = edgeNumber;}
-	void setGeneratorNumber(int generatorNumber)	{ this -> generatorNumber = generatorNumber;}
-	void setDemandNumber(int demandNumber)		{ this -> demandNumber = demandNumber;}
-	void setNetworkInvalid()						{ this -> valid = false; }
-	void setNetworkValid()						{ this -> valid = true; }
+	void setNodeNumber(int nodeNumber) {
+		this -> mNodeNumber = nodeNumber;
+	}
+	void setEdgeNumber(int edgeNumber) {
+		this -> mEdgeNumber = edgeNumber;
+	}
+	void setGeneratorNumber(int generatorNumber) {
+		this -> mGeneratorNumber = generatorNumber;
+	}
+	void setDemandNumber(int demandNumber) {
+		this -> mDemandNumber = demandNumber;
+	}
+	void setNetworkInvalid() {
+		this -> mIsValid = false;
+	}
+	void setNetworkValid() {
+		this -> mIsValid = true;
+	}
 
 	/*
 	 * Add an edge to the network
@@ -48,11 +58,43 @@ public:
 	/*
 	 * Accessors
 	 */
-	int getNodeNumber()			const{ return nodeNumber; }
-	int getEdgeNumber()			const{ return edgeNumber; }
-	int getGeneratorNumber()		const{ return generatorNumber; }
-	int getdemandNumber()		const{ return generatorNumber; }
-	bool isValid() 				const{ return valid; }
+	int getNodeNumber() const {
+		return mNodeNumber;
+	}
+	int getEdgeNumber() const {
+		return mEdgeNumber;
+	}
+	int getGeneratorNumber() const {
+		return mGeneratorNumber;
+	}
+	int getDemandNumber() const {
+		return mDemandNumber;
+	}
+	bool isValid() const {
+		return mIsValid;
+	}
+
+	const Node& getNodeFromIndex(int index) const {
+		return (*mNodeAddressList[index]);
+	}
+	const Node& getNodeFromNodeID(int nodeID) const {
+		return (*mNodeAddressList[(*mNodeIDNodeIndexMap.find(nodeID)).second]);
+	}
+	const Node& getNodeFromDemandIndex(int demandIndex) const {
+		return getNodeFromIndex(mDemandIndexList[demandIndex]);
+	}
+	int getNodeIndexFromDemandIndex(int demandIndex) const {
+		return mDemandIndexList[demandIndex];
+	}
+	const Node& getNodeFromGeneratorIndex(int generatorIndex) const {
+		return getNodeFromIndex(mGeneratorIndexList[generatorIndex]);
+	}
+	int getNodeIndexFromGeneratorIndex(int generatorIndex) const {
+		return mGeneratorIndexList[generatorIndex];
+	}
+	const Edge& getEdgeFromIndex(int index) const {
+		return mEdgeList[index];
+	}
 
 	void readNetworkStructureFromFile(const char *);
 	virtual ~Network();

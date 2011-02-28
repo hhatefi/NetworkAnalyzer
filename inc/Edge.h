@@ -20,8 +20,8 @@ public:
 	 */
 	int getFromNodeIndex() const 	{ return fromNodeIndex; }
 	int getToNodeIndex() const 		{ return toNodeIndex; }
-	int getCapacity() const 			{ return capacity; }
-	int getResistance() const 		{ return resistance; }
+	double getCapacity() const 		{ return capacity; }
+	double getResistance() const 	{ return resistance; }
 
 	/*
 	 * Mutators

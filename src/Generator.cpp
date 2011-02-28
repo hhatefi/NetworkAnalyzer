@@ -9,9 +9,10 @@
 
 Generator::Generator(int nodeID = -1, NodeType nodeType = GENERATOR,
 					 int outgoingEdgeNumber = 0, int incomingEdgeNumber = 0,
-					 double minPower = 0.0, double maxPower = 0.0 ) : Node(nodeID, nodeType, outgoingEdgeNumber, incomingEdgeNumber) {
+					 double minPower = 0.0, double maxPower = 0.0, int generatorIndex = 0 ) : Node(nodeID, nodeType, outgoingEdgeNumber, incomingEdgeNumber) {
 	setMinPower(minPower);
 	setMaxPower(maxPower);
+	setGeneratorIndex(generatorIndex);
 }
 
 Generator::~Generator() {

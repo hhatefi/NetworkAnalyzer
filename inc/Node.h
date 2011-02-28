@@ -29,11 +29,11 @@ public:
 	/*
 	 * Accessors
 	 */
-	int getNodeID() 		{ return nodeID; }
-	int getNodeType() 	{ return nodeType; }
+	int getNodeID() 		const{ return nodeID; }
+	int getNodeType() 	const{ return nodeType; }
 
-	int getOutgoingEdgeIndex(int i) { return outgoingEdgeIndices[i]; }
-	int getIncomingEdgeIndex(int i) { return incomingEdgeIndices[i]; }
+	int getOutgoingEdgeIndex(int i) const{ return outgoingEdgeIndices[i]; }
+	int getIncomingEdgeIndex(int i) const{ return incomingEdgeIndices[i]; }
 
 	/*
 	 * Mutators

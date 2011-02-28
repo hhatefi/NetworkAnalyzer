@@ -13,18 +13,21 @@
 class Demand: public Node {
 private:
 	double nominalDemand;
+	int mDemandIndex;
 public:
-	Demand(int, NodeType, int, int, double);
+	Demand(int, NodeType, int, int, double, int);
 
 	/*
 	 * Accessors
 	 */
-	double getNominalDemand() { return nominalDemand; }
+	double getNominalDemand() const{ return nominalDemand; }
+	int getDemandIndex() const { return mDemandIndex; }
 
 	/*
 	 * Mutators
 	 */
 	void setNominalDemand(double nominalDemand) { this -> nominalDemand = nominalDemand; }
+	void setDemandIndex(int demandIndex) { mDemandIndex = demandIndex; }
 
 	virtual ~Demand();
 };

@@ -13,20 +13,23 @@
 class Generator: public Node {
 private:
 	double minPower, maxPower;
+	int mGeneratorIndex;
 public:
-	Generator(int, NodeType, int, int, double, double);
+	Generator(int, NodeType, int, int, double, double, int);
 
 	/*
 	 * Accessors
 	 */
-	double getMinPower() { return minPower; }
-	double getMaxPower() { return maxPower; }
+	double getMinPower() const{ return minPower; }
+	double getMaxPower() const{ return maxPower; }
+	int getGeneratorIndex() const { return mGeneratorIndex; }
 
 	/*
 	 * Mutators
 	 */
 	void setMinPower(double minPower) { this -> minPower = minPower; }
 	void setMaxPower(double maxPower) { this -> maxPower = maxPower; }
+	void setGeneratorIndex(int generatorIndex) { mGeneratorIndex = generatorIndex; }
 
 	virtual ~Generator();
 };
