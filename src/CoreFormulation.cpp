@@ -11,8 +11,7 @@ CoreFormulation::CoreFormulation(Network *networkModel = NULL, const char *outpu
 	mNetworkModel = networkModel;
 	mLogicalContext = NULL;
 	mLogicalContextIsValid = false;
-	mEnableOutputStream = true;
-	setOutputFileName(outputFileName);
+	setLogFileName((char*)outputFileName);
 
 }
 

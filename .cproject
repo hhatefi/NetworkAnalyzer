@@ -28,7 +28,7 @@
 									<listOptionValue builtIn="false" value="stdc++"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.377949275" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/Users/hatefi/opt/yices/lib"/>
+									<listOptionValue builtIn="false" value="/home/hahate/opt/yices/lib"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.845094805" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -43,7 +43,7 @@
 								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.2094005329" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.470457592" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1148010174" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/hatefi/opt/yices/include"/>
+									<listOptionValue builtIn="false" value="/home/hahate/opt/yices/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.893780059" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

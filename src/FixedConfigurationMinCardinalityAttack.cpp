@@ -10,36 +10,28 @@
 FixedConfigurationMinCardinalityAttack::FixedConfigurationMinCardinalityAttack(
 		Network *networkModel, const char *outputStream) :
 	FarkasAlternativeFormulation(networkModel, outputStream) {
-	mPowerSupplyLowerBoundVariables = vector<yices_expr> (
-			mNetworkModel -> getGeneratorNumber(), NULL);
-	mPowerSupplyUpperBoundVariables = vector<yices_expr> (
-			mNetworkModel -> getGeneratorNumber(), NULL);
-	mZeroOneVariable = vector<yices_expr> (
-			mNetworkModel -> getEdgeNumber(), NULL);
-	mGeneratorAvailabilityList = vector<bool> (
-			mNetworkModel -> getGeneratorNumber(), true);
+	if ( networkModel != NULL ) {
+		yices_expr null = (yices_expr)NULL;
+		mPowerSupplyLowerBoundVariables = vector<yices_expr> (
+				mNetworkModel -> getGeneratorNumber(), null);
+		mPowerSupplyUpperBoundVariables = vector<yices_expr> (
+				mNetworkModel -> getGeneratorNumber(), null);
+		mZeroOneVariable = vector<yices_expr> (
+				mNetworkModel -> getEdgeNumber(), null);
+		mGeneratorAvailabilityList = vector<bool> (
+				mNetworkModel -> getGeneratorNumber(), true);
+	}
+	else {
+		mPowerSupplyLowerBoundVariables = vector<yices_expr> ();
+		mPowerSupplyUpperBoundVariables = vector<yices_expr> ();
+		mZeroOneVariable = vector<yices_expr> ();
+		mGeneratorAvailabilityList = vector<bool> ();
+	}
 
 	mThreshold = 0.5;
 
 }
 
-/*
- * Open output stream if it's enabled
- */
-void FixedConfigurationMinCardinalityAttack::startWriting2OutputStream(const char * mode) {
-	if( isOutputStreamEnable() ) {
-		const char *outputFileName = getOutputFileName();
-		if( outputFileName[0] != '\0' ) {
-			freopen(outputFileName, "w", stdout);
-			if( freopen(outputFileName, mode, stdout) == NULL ) {
-				cerr<<"Cannot open "<<outputFileName<<"\n";
-				disableOutputStream();
-				freopen("/dev/tty", "w", stdout);
-			}
-		}
-	}
-
-}
 
 
 /*
@@ -56,12 +48,6 @@ int FixedConfigurationMinCardinalityAttack::getActiveGeneratorNumber() const {
 	return sum;
 }
 
-/*
- * Close output stream if it's open
- */
-void FixedConfigurationMinCardinalityAttack::endWriting2OutputStream() {
-	freopen("/dev/tty", "w", stdout);
-}
 
 /*
  * Set the node IDs in inactiveGeneratorNodeIDList array as inactive generators
@@ -100,14 +86,6 @@ void FixedConfigurationMinCardinalityAttack::initialize() {
     yices_var_decl powerGeneratorUpperBoundFunctionDeclaration = yices_mk_var_decl(mLogicalContext, (char *)"z5", mYicesTypeFunctionInt2Real);
     yices_var_decl zeroOneFunctionDeclaration = yices_mk_var_decl(mLogicalContext, (char *)"xx", mYicesTypeFunctionInt2Int);
 
-    /*
-     * Write into output stream
-     */
-    if( isOutputStreamEnable() ) {
-    		printf("(define z4::(-> int real) ) ;; for power generator lower bound\n");
-    		printf("(define z5::(-> int real) ) ;; for power generator upper bound\n");
-    		printf("(define xx::(-> int int) ) ;; for power generator upper bound\n");
-    }
 
     /*
      * Creating yices_expr from function declarations
@@ -136,9 +114,7 @@ void FixedConfigurationMinCardinalityAttack::initialize() {
 
 void FixedConfigurationMinCardinalityAttack::createLogicalContext() {
 
-	yices_enable_log_file((char*)"/tmp/.yices");
-	yices_set_verbosity(3);
-	startWriting2OutputStream("w");
+//	yices_set_verbosity(3);
 
 	initialize();
 
@@ -162,11 +138,6 @@ void FixedConfigurationMinCardinalityAttack::createLogicalContext() {
 			yices_expr constraint_i = yices_mk_ge(mLogicalContext, result, getZEROExpression());
 
 			yices_assert(mLogicalContext, constraint_i);
-			if( isOutputStreamEnable() ) {
-				printf("(assert ");
-				yices_pp_expr(constraint_i);
-				printf(" )\n");
-			}
 		}
 	}
 
@@ -184,11 +155,6 @@ void FixedConfigurationMinCardinalityAttack::createLogicalContext() {
 
 			yices_assert(mLogicalContext, constraint_i);
 
-			if( isOutputStreamEnable() ) {
-				printf("(assert ");
-				yices_pp_expr(constraint_i);
-				printf(" )\n");
-			}
 		}
 	}
 
@@ -212,21 +178,11 @@ void FixedConfigurationMinCardinalityAttack::createLogicalContext() {
 		yices_expr constraint_i = yices_mk_or(mLogicalContext, orArgs, 2);
 
 		yices_assert(mLogicalContext, constraint_i);
-		if( isOutputStreamEnable() ) {
-			printf("(assert ");
-			yices_pp_expr(constraint_i);
-			printf(" )\n");
-		}
 		sumXXArgs[i] = mZeroOneVariable[i];
 	}
 	yices_expr sumXX = yices_mk_sum(mLogicalContext, sumXXArgs, mNetworkModel -> getEdgeNumber());
 	yices_expr consttraintSumXXLessThanY = yices_mk_le(mLogicalContext, sumXX, yices_mk_num(mLogicalContext, mNetworkModel -> getEdgeNumber() - 2) );
 	yices_assert(mLogicalContext, consttraintSumXXLessThanY);
-	if( isOutputStreamEnable() ) {
-		printf("( assert ");
-		yices_pp_expr(consttraintSumXXLessThanY);
-		printf(" )\n");
-	}
 	delete [] sumXXArgs;
 
 	/*
@@ -305,13 +261,6 @@ void FixedConfigurationMinCardinalityAttack::createLogicalContext() {
 
 	yices_assert(mLogicalContext, constraint_Ab);
 
-	if( isOutputStreamEnable() ) {
-		printf("(assert ");
-		yices_pp_expr(constraint_Ab);
-		printf(" )\n");
-	}
-
-	//endWriting2OutputStream();
 	delete []arglist;
 
 }
@@ -321,24 +270,16 @@ void FixedConfigurationMinCardinalityAttack::check() {
 	/*
 	 * Adding assert+
 	 */
-	map<assertion_id,int> assertID2IndexMap;
+	assertion_id *assertionList = new assertion_id[mNetworkModel -> getEdgeNumber()];
 	for(int i = 0; i < mNetworkModel -> getEdgeNumber(); i++) {
 		int assertID = yices_assert_weighted(mLogicalContext, mEdgeSelectionVariables[i], 1);
-		assertID2IndexMap.insert(pair<assertion_id,int>(assertID, i));
-//		yices_assert_retractable(mLogicalContext, mEdgeSelectionVariables[i]);
-		if( isOutputStreamEnable() ) {
-			printf("(assert+ ");
-			yices_pp_expr(mEdgeSelectionVariables[i]);
-			printf(" 1)\n");
-		}
+		assertionList[i] = assertID;
 	}
-	endWriting2OutputStream();
 
 	/*
 	 * Run max sat
 	 */
-	setArithmeticOnly();
-	//yices_set_maxsat_initial_cost(3);
+	yices_set_maxsat_initial_cost(2);
 	lbool result = yices_max_sat(mLogicalContext);
 	if ( result == l_false) {
 		cerr<<"Network attack is unsatisfiable.\n";
@@ -347,30 +288,21 @@ void FixedConfigurationMinCardinalityAttack::check() {
 		cerr<<"Network model is incomplete. The result is unknown.\n";
 	}
 
-//	yices_model model = yices_get_model(mLogicalContext);
-//	for(int i = 0; i < mNetworkModel -> getEdgeNumber(); i++) {
-//		if( yices_evaluate_in_model(model, mEdgeSelectionVariables[i]) == l_false ) {
-//			cerr<< i<<'\n';
-//		}
-//		else if ( yices_evaluate_in_model(model, mEdgeSelectionVariables[i]) == l_undef ) {
-//			cerr<< i<< "-> Unknown\n";
-//		}
-//	}
-
-	assertion_id *unsatisfiableCores = new assertion_id[ mNetworkModel -> getEdgeNumber() ];
-	int unsatisfiableCoreSize = yices_get_unsat_core(mLogicalContext, unsatisfiableCores);
-	cerr<<"Cardinality of vulnerable edge set is "<<unsatisfiableCoreSize<<", Edge set {";
-	if(unsatisfiableCoreSize > 0) {
-		cerr<<assertID2IndexMap[unsatisfiableCores[0]];
+	yices_model model = yices_get_model(mLogicalContext);
+	int cost = (int) yices_get_cost(model);
+	cerr<<"Cardinality of vulnerable edge set is "<<cost<<", Edge set {";
+	for(int i = 0; i < mNetworkModel -> getEdgeNumber(); i++) {
+		if( yices_get_assertion_value(model, assertionList[i]) == 0 ) {
+			const Edge & e = mNetworkModel -> getEdgeFromIndex(i);
+			const Node & fromNode = mNetworkModel -> getNodeFromIndex(e.getFromNodeIndex());
+			const Node & toNode = mNetworkModel -> getNodeFromIndex(e.getToNodeIndex());
+			cerr<<"\n\t => "<<i<<"( "<< fromNode.getNodeID()<< ", "<<toNode.getNodeID()<<" )";
+		}
 	}
-	for(int i = 1; i < unsatisfiableCoreSize; i++) {
-		cerr<<", "<<assertID2IndexMap[unsatisfiableCores[i]];
-	}
-	cerr<<"}\n";
+	cerr<<"\n}\n";
 
+	delete []assertionList;
 
-
-	delete []unsatisfiableCores;
 
 }
 

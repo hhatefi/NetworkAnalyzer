@@ -9,6 +9,8 @@
 #define COREFORMULATION_H_
 
 #include "../inc/Network.h"
+#include <string.h>
+#include <stdio.h>
 #include <iostream>
 #include <yices_c.h>
 
@@ -16,8 +18,7 @@
 
 class CoreFormulation {
 private:
-	bool mLogicalContextIsValid, mEnableOutputStream;
-	char mOutputFileName[MAX_FILE_NAME_LENGTH];
+	bool mLogicalContextIsValid;
 	yices_expr mZERO; // 0 as a yices expression
 protected:
 	Network *mNetworkModel;
@@ -30,16 +31,12 @@ protected:
 	/*
 	 * Accessors
 	 */
-	const char *getOutputFileName() const { return mOutputFileName; }
 	bool isLogicalContextValid() const { return mLogicalContext; }
-	bool isOutputStreamEnable() const { return mEnableOutputStream; }
 
 	/*
 	 * Mutators
 	 */
 	void setLogicalContextValidity(bool newValidity) { mLogicalContextIsValid = newValidity; }
-	void setArithmeticOnly() { yices_set_arith_only(1); }
-	void resetArithmeticOnly() { yices_set_arith_only(0); }
 public:
 	CoreFormulation(Network *, const char *);
 
@@ -48,22 +45,20 @@ public:
 	 */
 	Network *getNetworkModel() { return mNetworkModel; }
 	const yices_expr getZEROExpression() const { return mZERO; }
+	bool isValid() { return (mNetworkModel != NULL) ? (mNetworkModel -> isValid() && mLogicalContextIsValid) : false; }
 
 	/*
 	 * Mutators
 	 */
 	void setNetworkModel(Network *networkModel) { mNetworkModel = networkModel; }
-	void disableOutputStream() { mEnableOutputStream = false; }
-	void enableOutputStream() { mEnableOutputStream = true; }
-	void setOutputFileName(const char *outputFileName) {
-		if ( outputFileName != NULL )
-			strncpy(mOutputFileName, outputFileName, MAX_FILE_NAME_LENGTH);
-		else
-			mOutputFileName[0] = '\0';
-		enableOutputStream();
+	void setLogFileName(const char *outputFileName) {
+		if ( outputFileName != NULL ){
+			yices_enable_log_file((char*)outputFileName);
+		}
 	}
+	void setArithmeticOnly() { yices_set_arith_only(1); }
+	void resetArithmeticOnly() { yices_set_arith_only(0); }
 
-	bool isValid() { return (mNetworkModel != NULL) ? (mNetworkModel -> isValid() && mLogicalContextIsValid) : false; }
 
 
 	virtual void check() = 0;

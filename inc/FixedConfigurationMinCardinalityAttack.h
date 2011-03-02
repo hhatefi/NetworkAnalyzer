@@ -17,8 +17,6 @@ private:
 	vector<bool> mGeneratorAvailabilityList;
 	double mThreshold;
 
-	void startWriting2OutputStream(const char*);
-	void endWriting2OutputStream();
 protected:
 	virtual void initialize();
 public:

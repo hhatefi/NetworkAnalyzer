@@ -46,6 +46,7 @@ int main(int argc, char**argv) {
 			f.setThreshold(atof(argv[thresholdArgIndex]));
 			//int lst = 1;
 			//f.setInactiveGenerators(&lst, 1);
+			f.setArithmeticOnly();
 			f.createLogicalContext();
 			f.check();
 		}

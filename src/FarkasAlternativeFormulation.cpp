@@ -9,11 +9,21 @@
 
 FarkasAlternativeFormulation::FarkasAlternativeFormulation(Network *networkModel = NULL, const char * outputStream = NULL)
 	: CoreFormulation(networkModel, outputStream){
-	mConservationLawVariables = vector<yices_expr>(mNetworkModel -> getNodeNumber(), NULL);
-	mFlowLowerBoundVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), NULL);
-	mFlowUpperBoundVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), NULL);
-	mDemandUpperBoundVariables = vector<yices_expr>(mNetworkModel -> getDemandNumber(), NULL);
-	mEdgeSelectionVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), NULL);
+	if( networkModel != NULL ) {
+		yices_expr null = (yices_expr)NULL;
+		mConservationLawVariables = vector<yices_expr>(mNetworkModel -> getNodeNumber(), null);
+		mFlowLowerBoundVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), null);
+		mFlowUpperBoundVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), null);
+		mDemandUpperBoundVariables = vector<yices_expr>(mNetworkModel -> getDemandNumber(), null);
+		mEdgeSelectionVariables = vector<yices_expr>(mNetworkModel -> getEdgeNumber(), null);
+	}
+	else {
+		mConservationLawVariables = vector<yices_expr>();
+		mFlowLowerBoundVariables = vector<yices_expr>();
+		mFlowUpperBoundVariables = vector<yices_expr>();
+		mDemandUpperBoundVariables = vector<yices_expr>();
+		mEdgeSelectionVariables = vector<yices_expr>();
+	}
 }
 
 /*
@@ -45,17 +55,6 @@ void FarkasAlternativeFormulation::initialize() {
      */
     yices_var_decl adequacyLevelVariableDeclaration = yices_mk_var_decl(mLogicalContext, (char *)"z", mYicesTypeReal);
 
-    /*
-     * Write into output stream
-     */
-    if( isOutputStreamEnable() ) {
-    		printf("(define z0::(-> int real) ) ;; for conservation law\n");
-    		printf("(define z1::(-> int real) ) ;; for flow lower bound\n");
-    		printf("(define z2::(-> int real) ) ;; for flow upper bound\n");
-    		printf("(define z3::(-> int real) ) ;; for demand upper bound\n");
-    		printf("(define z::real) 	  ;; for adequacy level\n");
-    		printf("(define x::(-> int bool) )  ;; for edge selection \n");
-    }
 
     /*
      * Creating yices_expr from function declarations
@@ -133,11 +132,6 @@ void FarkasAlternativeFormulation::createLogicalContext() {
 		yices_expr constraint_i = yices_mk_or(mLogicalContext, orArgs, 2);
 
 		yices_assert(mLogicalContext, constraint_i); // Submit the constraint to the logical context
-		if( isOutputStreamEnable() ) {
-			printf("(assert ");
-			yices_pp_expr(constraint_i);
-			printf(" )\n");
-		}
 	}
 
 	/*
@@ -154,11 +148,6 @@ void FarkasAlternativeFormulation::createLogicalContext() {
 		yices_expr constraint_i = yices_mk_ge(mLogicalContext, sum, getZEROExpression());
 
 		yices_assert(mLogicalContext, constraint_i); // Submit the constraint to the logical context
-		if( isOutputStreamEnable() ) {
-			printf("(assert ");
-			yices_pp_expr(constraint_i);
-			printf(" )\n");
-		}
 	}
 
 	/*
@@ -171,11 +160,6 @@ void FarkasAlternativeFormulation::createLogicalContext() {
 		yices_expr constraint_i = yices_mk_and(mLogicalContext, argumentList, 2);
 
 		yices_assert(mLogicalContext, constraint_i); // Submit the constraint to the logical context
-		if( isOutputStreamEnable() ) {
-			printf("(assert ");
-			yices_pp_expr(constraint_i);
-			printf(")\n");
-		}
 	}
 
 	/*
@@ -183,11 +167,6 @@ void FarkasAlternativeFormulation::createLogicalContext() {
 	 */
 	argumentList[0] = yices_mk_le(mLogicalContext, mAdequacyLevelVariable, getZEROExpression());
 	yices_assert(mLogicalContext, argumentList[0]); // Submit the constraint to the logical context
-	if( isOutputStreamEnable() ) {
-		printf("(assert ");
-		yices_pp_expr(argumentList[0]);
-		printf(")\n");
-	}
 
 	/*
 	 * z3 >= 0
@@ -197,11 +176,6 @@ void FarkasAlternativeFormulation::createLogicalContext() {
 		yices_expr constraint_i = yices_mk_ge(mLogicalContext, mDemandUpperBoundVariables[i], getZEROExpression());
 
 		yices_assert(mLogicalContext, constraint_i); // Submit the constraint to the logical context
-		if( isOutputStreamEnable() ) {
-			printf("(assert ");
-			yices_pp_expr(constraint_i);
-			printf(")\n");
-		}
 	}
 
 }

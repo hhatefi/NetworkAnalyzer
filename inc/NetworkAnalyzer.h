@@ -11,6 +11,8 @@
 #define MAX_COMMAND_LENGTH 500
 #define MAX_K 5
 
+#include <stdlib.h>
+#include <stdio.h>
 #include<yices_c.h>
 #include <yicesl_c.h>
 
