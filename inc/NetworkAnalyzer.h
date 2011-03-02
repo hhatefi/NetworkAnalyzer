@@ -496,19 +496,11 @@
     }
 
     void findMinCardinalityAttack(yices_context ctx, PowerGridModel* pgm) {
-    	/*
-    	 * Set yices into arithmetic only
-    	 */
-    		yices_set_arith_only(1);
-
         int subset[MAX_K];
         yices_expr offEdgeList[MAX_K];
 
         /* The number of removed edges */
         int k;
-
-        /* for retracting previous asserts */
-        int assertPlusCounter = 0;
 
         for( k = 2; k <= MAX_K; k++) {
 
@@ -556,7 +548,7 @@
             if ( isInconsistent ) {
                 printf("Minimum successful attack found. The attack size is %d. Vulnerable set is:\n{\n", k);
                 for(int i = 0; i < k; i++) {
-                		printf("\t%d => (%d , %d)\n", subset[i], pgm -> edges[i].fromNode, pgm -> edges[i].toNode);
+                		printf("\t%d => (%d , %d)\n", subset[i], pgm -> edges[subset[i]].fromNode, pgm -> edges[subset[i]].toNode);
                 }
                 printf("}\n");
 
@@ -572,7 +564,13 @@
 
     void doAnalysis(char* networkModelFile, double threshold, const char * outputFileName = NULL) {
     		PowerGridModel *pgm = readNetworkModel(networkModelFile);
-    		yices_context ctx;
+    		yices_context ctx = (yices_context)NULL;
+
+        	/*
+        	 * Set yices into arithmetic only
+        	 */
+        	yices_set_arith_only(1);
+
     		if(pgm)
     			ctx = createLogicalContext(pgm, threshold, outputFileName);
     		if(ctx)
